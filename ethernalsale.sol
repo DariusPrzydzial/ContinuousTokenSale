@@ -23,7 +23,9 @@ contract ethernalSale {
         saleStarted = now;
     }
     
-    // adds a buy order
+    // adds a buy order. For simplicity's sake I have one order per price point.
+    // This shouldn't be a problem as you can have a min token deposit per price point
+    // and you can have very small price point differences
     function putOrder(uint price) payable {
         if (msg.value < minAmount) throw;
         // there can be only one order per price point
