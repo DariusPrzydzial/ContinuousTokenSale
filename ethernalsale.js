@@ -74,12 +74,14 @@ contract ethernalSale {
                 uint valueToSend = o.amount * currPrice;
                 targetSale -= o.amount;
                 totalSold += o.amount;
+                balanceOf[o.buyer] += o.amount;
                 orderBook[price] = order({amount: 0, buyer: 0});
                 crowdseller.transfer(valueToSend);
             } else {
-                uint valueToSend = o.amount * currPrice;
-                totalSold += o.amount;
+                uint valueToSend = targetSale * currPrice;
+                totalSold += targetSale;
                 orderBook[price] = order({amount: o.amount - targetSale, buyer: o.buyer});
+                balanceOf[o.buyer] += targetSale;                
                 targetSale = 0;
                 crowdseller.transfer(valueToSend);
             }
