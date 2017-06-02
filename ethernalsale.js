@@ -50,8 +50,9 @@ contract ethernalSale {
     function cancelOrder(uint price) {
         order o = orderBook[price];
         if (o.amount == 0 || o.buyer != msg.sender) throw;
+        uint valueToSend = price*o.amount;
         orderBook[price] = order({amount: 0, buyer: 0});
-        msg.sender.transfer(price*o.amount);
+        msg.sender.transfer(valueToSend);
     }
     
     // a curve that generates how many tokens per seconds should be generated
@@ -70,14 +71,17 @@ contract ethernalSale {
             // loop throught the highest sale
             order o = orderBook[currPrice];
             if (o.amount <= targetSale) {
+                uint valueToSend = o.amount * currPrice;
                 targetSale -= o.amount;
                 totalSold += o.amount;
-                crowdseller.transfer(o.amount);
+                orderBook[price] = order({amount: 0, buyer: 0});
+                crowdseller.transfer(valueToSend);
             } else {
-                o.amount -= targetSale;
-                targetSale = 0;
+                uint valueToSend = o.amount * currPrice;
                 totalSold += o.amount;
-                crowdseller.transfer(o.amount);
+                orderBook[price] = order({amount: o.amount - targetSale, buyer: o.buyer});
+                targetSale = 0;
+                crowdseller.transfer(valueToSend);
             }
             currPrice--;
         }
